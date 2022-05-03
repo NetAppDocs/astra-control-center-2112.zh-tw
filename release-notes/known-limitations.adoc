@@ -1,0 +1,156 @@
+---
+sidebar: sidebar 
+permalink: release-notes/known-limitations.html 
+keywords: astra, control center, limitations, known limitations, interoperability 
+summary: 已知限制指出本產品版本不支援的平台、裝置或功能、或是無法與產品正確互通的平台、裝置或功能。請仔細檢閱這些限制。 
+---
+= 已知限制
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/release-notes/
+
+
+已知限制指出本產品版本不支援的平台、裝置或功能、或是無法與產品正確互通的平台、裝置或功能。請仔細檢閱這些限制。
+
+
+
+== 同一個叢集無法由兩個Astra Control Center執行個體管理
+
+如果您想要管理另一個Astra Control Center執行個體上的叢集、您應該先進行 link:../use/unmanage.html#stop-managing-compute["取消管理叢集"] 在另一個執行個體上進行管理之前、請先從管理該執行個體的執行個體進行管理。從管理中移除叢集之後、請執行下列命令、確認叢集未受管理：
+
+[listing]
+----
+oc get pods n -netapp-monitoring
+----
+該命名空間中不應有執行的Pod、或命名空間不應存在。如果其中任一項為真、則叢集不受管理。
+
+
+
+== Astra Control Center無法在同一個雲端中管理兩個名稱相同的叢集
+
+如果您嘗試新增的叢集名稱與雲端中已存在的叢集名稱相同、則作業將會失敗。如果您尚未變更Kubernetes組態檔中的叢集名稱預設值、則此問題最常發生在標準Kubernetes環境中。
+
+因應措施如下：
+
+. 編輯您的Kubeadm-config組態地圖：
++
+[listing]
+----
+kubectl edit configmaps -n kube-system kubeadm-config
+----
+. 將「clustername」（叢集名稱）欄位值從「Kubernetes」（Kubernetes預設名稱）變更為獨特的自訂名稱。
+. 編輯Kbeconfig（`.kube/config'）。
+. 將叢集名稱從「Kubernetes」更新為唯一的自訂名稱（以下範例使用「xyz-cluster」）。如以下範例所示、在「叢集」和「內容」區段中進行更新：
++
+[listing, subs="+quotes"]
+----
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: ExAmPLERb2tCcjZ5K3E2Njk4eQotLExAMpLEORCBDRVJUSUZJQ0FURS0txxxxXX==
+    server: https://x.x.x.x:6443
+  *name: xyz-cluster*
+contexts:
+- context:
+    *cluster: xyz-cluster*
+    namespace: default
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+----
+
+
+
+
+== 使用參照運算子所安裝的應用程式複製可能會失敗
+
+Astra Control支援以命名空間範圍運算子安裝的應用程式。這些運算子通常採用「傳遞值」而非「傳遞參照」架構來設計。以下是一些遵循這些模式的營運者應用程式：
+
+* https://github.com/k8ssandra/cass-operator/tree/v1.7.1["Apache K8ssandra"^]
+* https://github.com/jenkinsci/kubernetes-operator["Jenkins CI"^]
+* https://github.com/percona/percona-xtradb-cluster-operator["Percona XtraDB叢集"^]
+
+
+請注意、Astra Control可能無法複製以「傳遞參考」架構設計的操作員（例如、CockroachDB操作員）。在這些類型的複製作業中、複製的操作員會嘗試從來源操作員參考Kubernetes機密、儘管在複製程序中有自己的新秘密。由於Astra Control不知道來源營運者的Kubernetes機密資料、因此複製作業可能會失敗。
+
+
+
+== 雖然叢集和網路正常運作、但叢集仍處於移除狀態
+
+如果叢集處於「移除」狀態、但叢集和網路連線狀況良好（外部使用Kubernetes API存取叢集的嘗試成功）、則您提供給Astra Control的Kubeconfig可能不再有效。這可能是因為叢集上的憑證輪替或過期。若要修正此問題、請使用更新Astra Control中與叢集相關的認證資料 link:https://docs.netapp.com/us-en/astra-automation/index.html["Astra Control API"]：
+
+. 執行POST呼叫、將更新的Kbeconfig檔案新增至「/assignon」端點、並從回應本文擷取指派的「id」。
+. 使用適當的叢集ID從「/叢集」端點執行「PUT」呼叫、並將「credentialId」設定為上一步的「id」值。
+
+
+完成這些步驟後、與叢集相關的認證資料會更新、叢集應重新連線並將其狀態更新為「可用」。
+
+
+
+== 不支援啟用OLM且叢集範圍內的營運者部署應用程式
+
+Astra Control Center不支援部署於具備營運者生命週期管理程式（OLM）功能的營運者或叢集範圍的營運者的應用程式。
+
+
+
+== 複製應用程式只能以相同的K8s發佈來完成
+
+如果您在叢集之間複製應用程式、來源叢集和目的地叢集必須是Kubernetes的相同發佈版本。例如、如果您從OpenShift 4.7叢集複製應用程式、請使用同樣為OpenShift 4.7的目的地叢集。
+
+
+
+== Astra Control Center中的S3鏟斗未報告可用容量
+
+在備份或複製由Astra Control Center管理的應用程式之前、請先查看ONTAP 資訊庫（英文）或StorageGRID 資訊庫（英文）管理系統中的庫位資訊。
+
+
+
+== 不支援metalLB 0.11.0
+
+對於Astra Control Center而言、metalLB 0.11.0並非受支援的負載平衡器。如需支援的負載平衡器相關資訊、請參閱 link:../get-started/requirements.html#service-type-loadbalancer-for-on-premises-kubernetes-clusters["Astra Control Center需求"]。
+
+
+
+== 不支援以Helm 2部署的應用程式
+
+如果您使用Helm來部署應用程式、Astra Control Center需要Helm版本3。完全支援使用Helm 3部署的應用程式管理及複製（或從Helm 2升級至Helm 3）。如需詳細資訊、請參閱 link:../get-started/requirements.html["Astra Control Center需求"]。
+
+
+
+== Astra Control Center不會驗證您為Proxy伺服器輸入的詳細資料
+
+請務必做到 link:../use/monitor-protect.html#add-a-proxy-server["輸入正確的值"] 建立連線時。
+
+
+
+== Astra Control Center尚未提供應用程式的資料保護功能
+
+此版本不支援使用快照、備份或還原選項、將Astra當作應用程式來管理。
+
+
+
+== 不良的Pod會影響應用程式管理
+
+如果託管應用程式的Pod處於不良狀態、Astra Control將無法建立新的備份與複製。
+
+
+
+== 現有連線至Postgres Pod會導致故障
+
+當您在Postgres Pod上執行作業時、不應直接在Pod內連線以使用psql命令。Astra Control需要psql存取來凍結及解出資料庫。如果有預先存在的連線、則快照、備份或複製都會失敗。
+
+
+
+== Trident不會從叢集解除安裝
+
+當您從Astra Control Center取消管理叢集時、Trident不會自動從叢集解除安裝。若要解除安裝Trident、您需要 https://docs.netapp.com/us-en/trident/trident-managing-k8s/uninstall-trident.html["請遵循Trident文件中的下列步驟"^]。
+
+
+
+== 如需詳細資訊、請參閱
+
+* link:../release-notes/resolved-issues.html["已解決的問題"]
+* link:../release-notes/known-issues.html["已知問題"]
+* link:../release-notes/known-issues-ads.html["Astra Data Store預覽與此Astra Control Center版本的已知問題"]
+

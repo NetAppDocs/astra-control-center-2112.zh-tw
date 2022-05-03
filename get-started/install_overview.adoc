@@ -1,0 +1,18 @@
+---
+sidebar: sidebar 
+permalink: get-started/install_overview.html 
+keywords: astra installation, install astra control center, how to install astra control, deploy, download from netapp support 
+summary: Astra Control Center安裝有兩種選擇。 
+---
+= 安裝總覽
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/release-notes/
+
+
+選擇並完成下列其中一個Astra Control Center安裝程序：
+
+* link:../get-started/install_acc.html["使用標準程序安裝Astra Control Center"]
+* link:../get-started/acc_operatorhub_install.html["（如果您使用Red Hat OpenShift）使用OpenShift作業系統集線器安裝Astra Control Center"]
+

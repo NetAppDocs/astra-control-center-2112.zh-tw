@@ -1,0 +1,600 @@
+---
+sidebar: sidebar 
+permalink: use/upgrade-acc.html 
+keywords: astra upgrade, upgrade astra control center, how to upgrade astra control, update 
+summary: 若要升級Astra Control Center、您必須依照所述步驟下載套裝組合並升級。 
+---
+= 升級Astra Control Center
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/get-started/
+
+
+若要升級Astra Control Center、請從NetApp支援網站下載安裝套件、並完成以下指示、以升級您環境中的Astra Control Center元件。您可以使用此程序、在連線網際網路或無線環境中升級Astra Control Center。
+
+.您需要的是 #8217 ；需要的是什麼
+* link:../get-started/requirements.html["開始升級之前、請確保環境仍符合Astra Control Center部署的最低需求"]。
+* 確保所有叢集操作員都處於健全狀態且可用。
++
+OpenShift範例：
+
++
+[listing]
+----
+oc get clusteroperators
+----
+* 確保所有API服務都處於健全狀態且可用。
++
+OpenShift範例：
+
++
+[listing]
+----
+oc get apiservices
+----
+* 登出您的Astra Control Center。
+
+
+Astra Control Center升級程序會引導您完成下列高層級步驟：
+
+* <<Download the Astra Control Center bundle>>
+* <<Unpack the bundle and change directory>>
+* <<Add the images to your local registry>>
+* <<Install the updated Astra Control Center operator>>
+* <<Upgrade Astra Control Center>>
+* <<Upgrade third-party services>>
+* <<Verify system status>>
+
+
+
+IMPORTANT: 請勿在整個升級過程中執行下列命令、以免刪除所有Astra Control Center Pod：「kubecl DELETE -f Astra _control_center_oper_deploy。yaml」
+
+
+TIP: 當排程、備份和快照未執行時、請在維護期間執行升級。
+
+
+NOTE: 如果您使用的是Red Hat的Podman、而非Docker Engine、則可使用Podman命令來取代Docker命令。
+
+
+
+== 下載Astra Control Center套裝組合
+
+. 請從下載Astra Control Center升級套裝組合（「Astra控制中心-[版本].tar.gz」） https://mysupport.netapp.com/site/products/all/details/astra-control-center/downloads-tab["NetApp 支援網站"^]。
+. （可選）使用以下命令驗證套件的簽名：
++
+[listing]
+----
+openssl dgst -sha256 -verify astra-control-center[version].pub -signature <astra-control-center[version].sig astra-control-center[version].tar.gz
+----
+
+
+
+
+== 解壓縮套件並變更目錄
+
+. 擷取影像：
++
+[listing]
+----
+tar -vxzf astra-control-center-[version].tar.gz
+----
+. 變更至Astra目錄。
++
+[listing]
+----
+cd astra-control-center-[version]
+----
+
+
+
+
+== 將映像新增至本機登錄
+
+. 將Astra Control Center映像目錄中的檔案新增至本機登錄。
++
+
+NOTE: 請參閱以下自動載入影像的範例指令碼。
+
++
+.. 登入Docker登錄：
++
+[listing]
+----
+docker login [your_registry_path]
+----
+.. 將影像載入Docker。
+.. 標記影像。
+.. [Subforte_image_local_register_push]將映像推送到本機登錄。
++
+[listing]
+----
+export REGISTRY=[your_registry_path]
+for astraImageFile in $(ls images/*.tar)
+  # Load to local cache. And store the name of the loaded image trimming the 'Loaded images: '
+  do astraImage=$(docker load --input ${astraImageFile} | sed 's/Loaded image: //')
+  astraImage=$(echo ${astraImage} | sed 's!localhost/!!')
+  # Tag with local image repo.
+  docker tag ${astraImage} ${REGISTRY}/${astraImage}
+  # Push to the local repo.
+  docker push ${REGISTRY}/${astraImage}
+done
+----
+
+
+
+
+
+
+== 安裝更新的Astra Control Center操作員
+
+. 編輯Astra Control Center營運者部署yaml（「Astra _control_center_operer_deploy」、以參照您的本機登錄和機密。
++
+[listing]
+----
+vim astra_control_center_operator_deploy.yaml
+----
++
+.. 如果您使用需要驗證的登錄、請將預設行「imagePullSecrets：[]」改為：
++
+[listing]
+----
+imagePullSecrets:
+- name: <name_of_secret_with_creds_to_local_registry>
+----
+.. 將「kube-RBAC代理」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
+.. 將「acc oper-manager-manager」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
+
+
++
+[listing, subs="+quotes"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: acc-operator-controller-manager
+  namespace: netapp-acc-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        *image: [your_registry_path]/kube-rbac-proxy:v4.8.0*
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        command:
+        - /manager
+        env:
+        - name: ACCOP_LOG_LEVEL
+          value: "2"
+        *image: [your_registry_path]/acc-operator:[version x.y.z]*
+        imagePullPolicy: IfNotPresent
+      *imagePullSecrets: []*
+----
+. 安裝更新的Astra Control Center操作員：
++
+[listing]
+----
+kubectl apply -f astra_control_center_operator_deploy.yaml
+----
++
+回應範例：
+
++
+[listing]
+----
+namespace/netapp-acc-operator unchanged
+customresourcedefinition.apiextensions.k8s.io/astracontrolcenters.astra.netapp.io configured
+role.rbac.authorization.k8s.io/acc-operator-leader-election-role unchanged
+clusterrole.rbac.authorization.k8s.io/acc-operator-manager-role configured
+clusterrole.rbac.authorization.k8s.io/acc-operator-metrics-reader unchanged
+clusterrole.rbac.authorization.k8s.io/acc-operator-proxy-role unchanged
+rolebinding.rbac.authorization.k8s.io/acc-operator-leader-election-rolebinding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/acc-operator-manager-rolebinding configured
+clusterrolebinding.rbac.authorization.k8s.io/acc-operator-proxy-rolebinding unchanged
+configmap/acc-operator-manager-config unchanged
+service/acc-operator-controller-manager-metrics-service unchanged
+deployment.apps/acc-operator-controller-manager configured
+----
+
+
+
+
+== 升級Astra Control Center
+
+. 編輯Astra Control Center自訂資源（CR）、並將Astra版本（「astraVersion」（位於「Pec」內）編號變更為最新版本：
++
+[listing]
+----
+kubectl edit acc -n [netapp-acc or custom namespace]
+----
++
+
+NOTE: 變更Astra版本是Astra Control Center升級的唯一需求。您的登錄路徑必須符合您在中推送映像的登錄路徑 <<substep_image_local_registry_push,上一步>>。
+
+. 確認Pod已終止並再次可用：
++
+[listing]
+----
+watch kubectl get pods -n [netapp-acc or custom namespace]
+----
+. 確認所有系統元件都已成功升級。
++
+[listing]
+----
+kubectl get pods -n [netapp-acc or custom namespace]
+----
++
+每個Pod的狀態都應該是最近的「執行中」和「年齡」。部署系統Pod可能需要幾分鐘的時間。
+
++
+回應範例：
+
++
+[listing]
+----
+NAME                                         READY   STATUS    RESTARTS   AGE
+acc-helm-repo-5f75c5f564-bzqmt             1/1     Running   0          11m
+activity-6b8f7cccb9-mlrn4                  1/1     Running   0          9m2s
+api-token-authentication-6hznt             1/1     Running   0          8m50s
+api-token-authentication-qpfgb             1/1     Running   0          8m50s
+api-token-authentication-sqnb7             1/1     Running   0          8m50s
+asup-5578bbdd57-dxkbp                      1/1     Running   0          9m3s
+authentication-56bff4f95d-mspmq            1/1     Running   0          7m31s
+bucketservice-6f7968b95d-9rrrl             1/1     Running   0          8m36s
+cert-manager-5f6cf4bc4b-82khn              1/1     Running   0          6m19s
+cert-manager-cainjector-76cf976458-sdrbc   1/1     Running   0          6m19s
+cert-manager-webhook-5b7896bfd8-2n45j      1/1     Running   0          6m19s
+cloud-extension-749d9f684c-8bdhq           1/1     Running   0          9m6s
+cloud-insights-service-7d58687d9-h5tzw     1/1     Running   2          8m56s
+composite-compute-968c79cb5-nv7l4          1/1     Running   0          9m11s
+composite-volume-7687569985-jg9gg          1/1     Running   0          8m33s
+credentials-5c9b75f4d6-nx9cz               1/1     Running   0          8m42s
+entitlement-6c96fd8b78-zt7f8               1/1     Running   0          8m28s
+features-5f7bfc9f68-gsjnl                  1/1     Running   0          8m57s
+fluent-bit-ds-h88p7                        1/1     Running   0          7m22s
+fluent-bit-ds-krhnj                        1/1     Running   0          7m23s
+fluent-bit-ds-l5bjj                        1/1     Running   0          7m22s
+fluent-bit-ds-lrclb                        1/1     Running   0          7m23s
+fluent-bit-ds-s5t4n                        1/1     Running   0          7m23s
+fluent-bit-ds-zpr6v                        1/1     Running   0          7m22s
+graphql-server-5f5976f4bd-vbb4z            1/1     Running   0          7m13s
+identity-56f78b8f9f-8h9p9                  1/1     Running   0          8m29s
+influxdb2-0                                1/1     Running   0          11m
+krakend-6f8d995b4d-5khkl                   1/1     Running   0          7m7s
+license-5b5db87c97-jmxzc                   1/1     Running   0          9m
+login-ui-57b57c74b8-6xtv7                  1/1     Running   0          7m10s
+loki-0                                     1/1     Running   0          11m
+monitoring-operator-9dbc9c76d-8znck        2/2     Running   0          7m33s
+nats-0                                     1/1     Running   0          11m
+nats-1                                     1/1     Running   0          10m
+nats-2                                     1/1     Running   0          10m
+nautilus-6b9d88bc86-h8kfb                  1/1     Running   0          8m6s
+nautilus-6b9d88bc86-vn68r                  1/1     Running   0          8m35s
+openapi-b87d77dd8-5dz9h                    1/1     Running   0          9m7s
+polaris-consul-consul-5ljfb                1/1     Running   0          11m
+polaris-consul-consul-s5d5z                1/1     Running   0          11m
+polaris-consul-consul-server-0             1/1     Running   0          11m
+polaris-consul-consul-server-1             1/1     Running   0          11m
+polaris-consul-consul-server-2             1/1     Running   0          11m
+polaris-consul-consul-twmpq                1/1     Running   0          11m
+polaris-mongodb-0                          2/2     Running   0          11m
+polaris-mongodb-1                          2/2     Running   0          10m
+polaris-mongodb-2                          2/2     Running   0          10m
+polaris-ui-84dc87847f-zrg8w                1/1     Running   0          7m12s
+polaris-vault-0                            1/1     Running   0          11m
+polaris-vault-1                            1/1     Running   0          11m
+polaris-vault-2                            1/1     Running   0          11m
+public-metrics-657698b66f-67pgt            1/1     Running   0          8m47s
+storage-backend-metrics-6848b9fd87-w7x8r   1/1     Running   0          8m39s
+storage-provider-5ff5868cd5-r9hj7          1/1     Running   0          8m45s
+telegraf-ds-dw4hg                          1/1     Running   0          7m23s
+telegraf-ds-k92gn                          1/1     Running   0          7m23s
+telegraf-ds-mmxjl                          1/1     Running   0          7m23s
+telegraf-ds-nhs8s                          1/1     Running   0          7m23s
+telegraf-ds-rj7lw                          1/1     Running   0          7m23s
+telegraf-ds-tqrkb                          1/1     Running   0          7m23s
+telegraf-rs-9mwgj                          1/1     Running   0          7m23s
+telemetry-service-56c49d689b-ffrzx         1/1     Running   0          8m42s
+tenancy-767c77fb9d-g9ctv                   1/1     Running   0          8m52s
+traefik-5857d87f85-7pmx8                   1/1     Running   0          6m49s
+traefik-5857d87f85-cpxgv                   1/1     Running   0          5m34s
+traefik-5857d87f85-lvmlb                   1/1     Running   0          4m33s
+traefik-5857d87f85-t2xlk                   1/1     Running   0          4m33s
+traefik-5857d87f85-v9wpf                   1/1     Running   0          7m3s
+trident-svc-595f84dd78-zb8l6               1/1     Running   0          8m54s
+vault-controller-86c94fbf4f-krttq          1/1     Running   0          9m24s
+----
+. 確認Astra狀態條件顯示升級已完成且準備就緒：
++
+[listing]
+----
+kubectl get -o yaml -n [netapp-acc or custom namespace] astracontrolcenters.astra.netapp.io astra
+----
++
+回應：
+
++
+[listing]
+----
+conditions:
+  - lastTransitionTime: "2021-10-25T18:49:26Z"
+    message: Astra is deployed
+    reason: Complete
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2021-10-25T18:49:26Z"
+    message: Upgrading succeeded.
+    reason: Complete
+    status: "False"
+    type: Upgrading
+----
+
+
+
+
+== 升級協力廠商服務
+
+在先前的升級步驟中、不會升級協力廠商服務Traefik和Cert Manager。您可以選擇使用本文所述的程序來升級、或是在系統需要時保留現有的服務版本。以下是建議的Traefik與Certs Manager升級順序：
+
+. <<Set up acc-helm-repo to upgrade Traefik and Cert-manager>>
+. <<Update Traefik service using acc-helm-repo>>
+. <<Update the Cert-manager service>>
+
+
+
+
+== 設定acc helm-repo以升級Traefik和Cert管理程式
+
+. 找到載入本機Docker快取的「企業級helm-repo」：
++
+[listing]
+----
+docker images enterprise-helm-repo
+----
++
+回應：
+
++
+[listing]
+----
+REPOSITORY             TAG         IMAGE ID       CREATED        SIZE
+enterprise-helm-repo   21.10.218   7a182d6b30f3   20 hours ago   464MB
+----
+. 使用上一步中的標記來啟動容器：
++
+[listing]
+----
+docker run -dp 8082:8080 enterprise-helm-repo:21.10.218
+----
++
+回應：
+
++
+[listing]
+----
+940436e67fa86d2c4559ac4987b96bb35588313c2c9ddc9cec195651963f08d8
+----
+. 將Helm repo新增至本機主機儲存庫：
++
+[listing]
+----
+helm repo add acc-helm-repo http://localhost:8082/
+----
++
+回應：
+
++
+[listing]
+----
+"acc-helm-repo" has been added to your repositories
+----
+. 將下列Python指令碼儲存為檔案、例如「set_prefore_vales.py」：
++
+
+NOTE: 此Python指令碼會建立兩個檔案、用於後續的升級步驟、以保留Helm值。
+
++
+[listing]
+----
+#!/usr/bin/env python3
+import json
+import os
+
+NAMESPACE = "netapp-acc"
+
+os.system(f"helm get values traefik -n {NAMESPACE} -o json > traefik_values.json")
+os.system(f"helm get values cert-manager -n {NAMESPACE} -o json > cert_manager_values.json")
+
+# reformat traefik values
+f = open("traefik_values.json", "r")
+traefik_values = {'traefik': json.load(f)}
+f.close()
+
+with open('traefik_values.json', 'w') as output_file:
+    json.dump(traefik_values, output_file)
+
+# reformat cert-manager values
+f = open("cert_manager_values.json", "r")
+cm_values = {'cert-manager': json.load(f)}
+f.close()
+
+cm_values['global'] = cm_values['cert-manager']['global']
+del cm_values['cert-manager']['global']
+
+with open('cert_manager_values.json', 'w') as output_file:
+    json.dump(cm_values, output_file)
+
+print('Done')
+----
+. 執行指令碼：
++
+[listing]
+----
+python3.7 ./set_previous_values.py
+----
+
+
+
+
+== 使用acc helm-repo更新Traefik服務
+
+
+NOTE: 您必須已經擁有 <<Set up acc-helm-repo to upgrade Traefik and Cert-manager,設定acc helm-repo>> 完成下列程序之前。
+
+. 使用安全的檔案傳輸工具下載Traefik套件、例如：
++
+[listing]
+----
+wget http://localhost:8082/traefik-0.2.0.tgz
+----
+. 擷取影像：
++
+[listing]
+----
+tar -vxzf traefik-0.2.0.tgz
+----
+. 套用Traefik客戶需求日：
++
+[listing]
+----
+kubectl apply -f ./traefik/charts/traefik/crds/
+----
+. 尋找Helm圖表版本以搭配升級版Traefik使用：
++
+[listing]
+----
+helm search repo acc-helm-repo/traefik
+----
++
+回應：
+
++
+[listing]
+----
+NAME                                    CHART VERSION   APP VERSION DESCRIPTION
+acc-helm-repo/traefik                 0.2.0           2.5.3       Helm chart for Traefik Ingress controller
+acc-helm-repo/traefik-ingressroutes   0.2.0           2.5.3       A Helm chart for Kubernetes
+----
+. 驗證要升級的raefik_vales.json檔案：
++
+.. 開啟raefik_values.json檔案。
+.. 檢查「imagePullSecret」欄位是否有值。如果是空白的、請從檔案中移除下列文字：
++
+[listing]
+----
+"imagePullSecrets": [{"name": ""}],
+----
+.. 請確定交由truefik映像到正確的位置、並具有正確的名稱：
++
+[listing]
+----
+image: [your_registry_path]/traefik
+----
+
+
+. 升級Traefik組態：
++
+[listing]
+----
+helm upgrade --version 0.2.0 --namespace netapp-acc -f traefik_values.json traefik acc-helm-repo/traefik
+----
++
+回應：
+
++
+[listing]
+----
+Release "traefik" has been upgraded. Happy Helming!
+NAME: traefik
+LAST DEPLOYED: Mon Oct 25 22:53:19 2021
+NAMESPACE: netapp-acc
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+----
+
+
+
+
+== 更新Cert管理程式服務
+
+
+NOTE: 您必須已完成 <<Update Traefik service using acc-helm-repo,Traefik更新>> 和 <<Set up acc-helm-repo to upgrade Traefik and Cert-manager,在Helm中新增了acc hel-repo>> 完成下列程序之前。
+
+. 尋找可與升級的Cert Manager搭配使用的Helm圖表版本：
++
+[listing]
+----
+helm search repo acc-helm-repo/cert-manager
+----
++
+回應：
+
++
+[listing]
+----
+NAME CHART VERSION APP VERSION DESCRIPTION
+acc-helm-repo/cert-manager 0.3.0 v1.5.4 A Helm chart for cert-manager
+acc-helm-repo/cert-manager-certificates 0.1.0 1.16.0 A Helm chart for Kubernetes
+----
+. 驗證CERD_manager_vales.json檔案以進行升級：
++
+.. 開啟cert管理程式_values.json檔案。
+.. 檢查「imagePullSecret」欄位是否有值。如果是空白的、請從檔案中移除下列文字：
++
+[listing]
+----
+"imagePullSecrets": [{"name": ""}],
+----
+.. 確認三個CERT管理程式映像被導向到正確的位置、並具有正確的名稱。
+
+
+. 升級您的Cert管理程式組態：
++
+[listing]
+----
+helm upgrade --version 0.3.0 --namespace netapp-acc -f cert_manager_values.json cert-manager acc-helm-repo/cert-manager
+----
++
+回應：
+
++
+[listing]
+----
+Release "cert-manager" has been upgraded. Happy Helming!
+NAME: cert-manager
+LAST DEPLOYED: Tue Nov 23 11:20:05 2021
+NAMESPACE: netapp-acc
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+----
+
+
+
+
+== 驗證系統狀態
+
+. 登入Astra Control Center。
+. 確認您所有的託管叢集和應用程式仍存在且受到保護。
+

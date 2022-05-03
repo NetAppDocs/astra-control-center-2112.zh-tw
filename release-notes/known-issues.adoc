@@ -1,0 +1,311 @@
+---
+sidebar: sidebar 
+permalink: release-notes/known-issues.html 
+keywords: astra, control center, bugs, known issues, problems 
+summary: 已知問題可識別可能導致您無法成功使用本產品版本的問題。 
+---
+= 已知問題
+:hardbreaks:
+:allow-uri-read: 
+:source-highlighter: highlight.js
+:icons: font
+:imagesdir: ../media/release-notes/
+
+
+已知問題可識別可能導致您無法成功使用本產品版本的問題。
+
+下列已知問題會影響目前的版本：
+
+* <<App with user-defined label goes into "removed" state>>
+* <<Unable to stop running app backup>>
+* <<During app restore from backup Trident creates a larger PV than the original PV>>
+* <<Clone performance impacted by large persistent volumes>>
+* <<App clones fail using a specific version of PostgreSQL>>
+* <<App clones fail when using Service Account level OCP Security Context Constraints (SCC)>>
+* <<Reusing buckets between instances of Astra Control Center causes failures>>
+* <<Selecting a bucket provider type with credentials for another type causes data protection failures>>
+* <<Backups and snapshots might not be retained during removal of an Astra Control Center instance>>
+* link:known-issues.html#clone-operation-cant-use-other-buckets-besides-the-default["除了預設值、Clone作業無法使用其他儲存區"]
+* <<Managing a cluster with Astra Control Center fails when default kubeconfig file contains more than one context>>
+* <<500 internal service error when attempting Trident app data management>>
+* <<Custom app execution hook scripts time out and cause post-snapshot scripts not to execute>>
+* link:known-issues.html#cant-determine-asup-tar-bundle-status-in-scaled-environment["無法判斷擴充環境中的ASUP tar套件狀態"]
+* <<Snapshots eventually begin to fail when using external-snapshotter version 4.2.0>>
+* <<Simultaneous app restore operations in the same namespace can fail>>
+* <<Upgrade fails if source version uses a container image registry that does not require authentication and target version uses a container image registry that requires authentication>>
+* <<Uninstall of Astra Control Center fails to clean up the monitoring-operator pod on the managed cluster>>
+* <<Uninstall of Astra Control Center fails to clean up Traefik CRDs>>
+
+
+
+
+== 具有使用者定義標籤的應用程式會進入「移除」狀態
+
+如果您使用不存在的k8s標籤定義應用程式、Astra Control Center將會建立、管理應用程式、然後立即移除應用程式。若要避免這種情況、請在Astra Control Center管理應用程式之後、將k8s標籤新增至Pod和資源。
+
+
+
+== 無法停止執行應用程式備份
+
+無法停止執行中的備份。如果您需要刪除備份、請等到備份完成後再使用中的指示 link:../use/protect-apps.html#delete-backups["刪除備份"]。若要刪除失敗的備份、請使用 link:https://docs.netapp.com/us-en/astra-automation/index.html["Astra Control API"^]。
+
+
+
+== 從備份Trident還原應用程式時、會建立比原始PV更大的PV
+
+如果您在建立備份之後調整持續磁碟區的大小、然後從該備份還原、則持續磁碟區大小將會與PV的新大小相符、而非使用備份的大小。
+
+
+
+== 大型持續磁碟區會影響複製效能
+
+非常大且耗用的持續磁碟區複本可能會間歇性緩慢、這取決於叢集對物件存放區的存取。如果該實體複本已掛起、且超過30分鐘未複製任何資料、Astra Control會終止該實體複製動作。
+
+
+
+== 使用特定版本的PostgreSQL時、應用程式複製失敗
+
+同一個叢集內的應用程式複製作業、會持續失敗、並顯示Bitnami PostgreSQL 11.5.0圖表。若要成功複製、請使用舊版或更新版本的圖表。
+
+
+
+== 使用服務帳戶層級OCP安全內容限制（SCC）時、應用程式複製失敗
+
+如果在OCP叢集的命名空間中、於服務帳戶層級設定原始的安全性內容限制、則應用程式複製可能會失敗。當應用程式複製失敗時、它會出現在Astra Control Center的「託管應用程式」區域、狀態為「移除」。請參閱 https://kb.netapp.com/Advice_and_Troubleshooting/Cloud_Services/Astra/Application_clone_is_failing_for_an_application_in_Astra_Control_Center["知識庫文章"] 以取得更多資訊。
+
+
+
+== 應用程式複製在以設定的儲存類別部署應用程式之後失敗
+
+在以明確設定的儲存類別（例如「helm install ...-set globe.storageClass = NetApp-CVs-perf-Extreme」）部署應用程式之後、後續嘗試複製應用程式時、必須讓目標叢集擁有原本指定的儲存類別。將具有明確設定儲存類別的應用程式複製到沒有相同儲存類別的叢集、將會失敗。在此案例中沒有任何恢復步驟。
+
+
+
+== 重複使用Astra Control Center執行個體之間的儲存區會導致故障
+
+如果您嘗試重複使用另一個或先前安裝Astra Control Center所使用的儲存區、備份與還原作業將會失敗。您必須使用不同的鏟斗、或是完全清除先前使用過的鏟斗。您無法在Astra Control Center的執行個體之間共用儲存區。
+
+
+
+== 選取具有其他類型認證的庫位供應商類型會導致資料保護失敗
+
+新增儲存庫時、請選取正確的儲存庫供應商、然後輸入該供應商的正確認證資料。例如、UI接受NetApp ONTAP S3作為類型並接受StorageGRID 驗證、但這將導致所有未來使用此儲存庫的應用程式備份與還原失敗。
+
+
+
+== 在移除Astra Control Center執行個體期間、可能無法保留備份與快照
+
+如果您擁有評估授權、請務必儲存您的帳戶ID、以免在Astra Control Center故障時發生資料遺失（如果您未傳送ASUP）。
+
+
+
+== 除了預設值、Clone作業無法使用其他儲存區
+
+在應用程式備份或應用程式還原期間、您可以選擇性地指定庫位ID。不過、應用程式複製作業一律會使用已定義的預設儲存區。沒有選項可變更實體複本的儲存區。如果您想要控制所使用的儲存桶、您也可以選擇 link:../use/manage-buckets.html#edit-a-bucket["變更庫位預設值"] 或執行 link:../use/protect-apps.html#create-a-backup["備份"] 接著是A link:../use/restore-apps.html["還原"] 獨立提供。
+
+
+
+== 使用Astra Control Center管理叢集失敗、因為預設的Kbeconfig檔案包含多個內容
+
+您無法在其中使用多個叢集和內容的Kbeconfig。請參閱 link:https://kb.netapp.com/Advice_and_Troubleshooting/Cloud_Services/Astra/Managing_cluster_with_Astra_Control_Center_may_fail_when_using_default_kubeconfig_file_contains_more_than_one_context["知識庫文章"] 以取得更多資訊。
+
+
+
+== 嘗試Trident應用程式資料管理時發生500個內部服務錯誤
+
+如果應用程式叢集上的Trident離線（並重新連線）、而且在嘗試應用程式資料管理時發生500個內部服務錯誤、請重新啟動應用程式叢集中的所有Kubernetes節點、以還原功能。
+
+
+
+== 自訂應用程式執行攔截指令碼逾時、導致快照後指令碼無法執行
+
+如果執行掛機執行時間超過25分鐘、掛機將會失敗、並建立傳回代碼為「N/A」的事件記錄項目。任何受影響的快照都會逾時、並標示為故障、並會出現一個事件記錄項目、指出逾時時間。
+
+由於執行掛勾通常會減少或完全停用執行中應用程式的功能、因此您應該一律盡量縮短自訂執行掛勾執行所需的時間。
+
+
+
+== 無法判斷擴充環境中的ASUP tar套件狀態
+
+在ASUP採樣期間、UI中的套裝組合狀態會報告為「collection」（正在收集）或「done」（單一）。大型環境最多需要一小時的收集時間。ASUP下載期間、套裝組合的網路檔案傳輸速度可能不足、而且下載可能會在15分鐘後逾時、UI中並無任何指示。下載問題取決於ASUP的大小、擴充的叢集大小、以及收集時間是否超過七天限制。
+
+
+
+== 使用外部Snapshotter 4.2.0版時、快照最終會開始失敗
+
+使用Kubernetes Snapshot-Controller（也稱為exter-snapshotter）4.2.0版搭配Kubernetes 1.20或1.21時、快照最終可能會開始失敗。若要避免這種情況發生、請使用不同的 https://kubernetes-csi.github.io/docs/snapshot-controller.html["支援的版本"^] Kubernetes版本1.20或1.21的外部快照功能（例如4.2.1版）。
+
+
+
+== 同一個命名空間中的應用程式同時還原作業可能會失敗
+
+如果您嘗試同時還原命名空間內的一或多個個別託管應用程式、還原作業可能會在一段時間後失敗。因應措施是一次還原每個應用程式一個。
+
+
+
+== 如果來源版本使用不需要驗證的容器映像登錄、而目標版本使用需要驗證的容器映像登錄、則升級會失敗
+
+如果您將使用不需要驗證的登錄的Astra Control Center系統升級至需要驗證的登錄更新版本、則升級會失敗。因應措施是執行下列步驟：
+
+. 登入可透過網路存取Astra Control Center叢集的主機。
+. 確定主機具有下列組態：
++
+** 安裝了「kubecll」版本1.19或更新版本
+** KUBECCONFIG環境變數設定為Astra Control Center叢集的KUbeconfig檔案
+
+
+. 執行下列指令碼：
++
+[source, shell]
+----
+
+namespace="<netapp-acc>"
+statefulsets=("polaris-vault" "polaris-mongodb" "influxdb2" "nats" "loki")
+for ss in ${statefulsets[@]}; do
+	existing=$(kubectl get -n ${namespace} statefulsets.apps ${ss} -o jsonpath='{.spec.template.spec.imagePullSecrets}')
+	if [ "${existing}" = "[{}]" ] || [ "${existing}" = "[{},{},{}]" ]; then
+		kubectl patch -n ${namespace} statefulsets.apps ${ss} --type merge --patch '{"spec": {"template": {"spec": {"imagePullSecrets": []}}}}'
+	else
+		echo "${ss} not patched"
+	fi
+done
+----
++
+您應該會看到類似下列的輸出：
+
++
+[listing]
+----
+statefulset.apps/polaris-vault patched
+statefulset.apps/polaris-mongodb patched
+statefulset.apps/influxdb2 patched
+statefulset.apps/nats patched
+statefulset.apps/loki patched
+----
+. 使用繼續升級 link:../use/upgrade-acc.html#add-the-images-to-your-local-registry["Astra Control Center升級說明"]。
+
+
+
+
+== 解除安裝Astra Control Center無法清除受管理叢集上的監控操作員Pod
+
+如果在卸載Astra Control Center之前未取消管理叢集、您可以使用下列命令手動刪除NetApp監控命名空間和命名空間中的Pod：
+
+.步驟
+. 刪除「acc監控」代理程式：
++
+[listing]
+----
+oc delete agents acc-monitoring -n netapp-monitoring
+----
++
+結果：
+
++
+[listing]
+----
+agent.monitoring.netapp.com "acc-monitoring" deleted
+----
+. 刪除命名空間：
++
+[listing]
+----
+oc delete ns netapp-monitoring
+----
++
+結果：
+
++
+[listing]
+----
+namespace "netapp-monitoring" deleted
+----
+. 確認移除的資源：
++
+[listing]
+----
+oc get pods -n netapp-monitoring
+----
++
+結果：
+
++
+[listing]
+----
+No resources found in netapp-monitoring namespace.
+----
+. 確認監控代理程式已移除：
++
+[listing]
+----
+oc get crd|grep agent
+----
++
+結果範例：
+
++
+[listing]
+----
+agents.monitoring.netapp.com                     2021-07-21T06:08:13Z
+----
+. 刪除自訂資源定義（CRD）資訊：
++
+[listing]
+----
+oc delete crds agents.monitoring.netapp.com
+----
++
+結果：
+
++
+[listing]
+----
+customresourcedefinition.apiextensions.k8s.io "agents.monitoring.netapp.com" deleted
+----
+
+
+
+
+== 解除安裝Astra Control Center無法清除Traefik CRD
+
+您可以手動刪除Traefik客戶需求日。客戶需求日是全域資源、刪除這些資源可能會影響叢集上的其他應用程式。
+
+.步驟
+. 列出叢集上安裝的Traefik客戶需求日：
++
+[listing]
+----
+kubectl get crds |grep -E 'traefik'
+----
++
+回應
+
++
+[listing]
+----
+ingressroutes.traefik.containo.us             2021-06-23T23:29:11Z
+ingressroutetcps.traefik.containo.us          2021-06-23T23:29:11Z
+ingressrouteudps.traefik.containo.us          2021-06-23T23:29:12Z
+middlewares.traefik.containo.us               2021-06-23T23:29:12Z
+middlewaretcps.traefik.containo.us            2021-06-23T23:29:12Z
+serverstransports.traefik.containo.us         2021-06-23T23:29:13Z
+tlsoptions.traefik.containo.us                2021-06-23T23:29:13Z
+tlsstores.traefik.containo.us                 2021-06-23T23:29:14Z
+traefikservices.traefik.containo.us           2021-06-23T23:29:15Z
+----
+. 刪除客戶需求日：
++
+[listing]
+----
+kubectl delete crd ingressroutes.traefik.containo.us ingressroutetcps.traefik.containo.us ingressrouteudps.traefik.containo.us middlewares.traefik.containo.us serverstransports.traefik.containo.us tlsoptions.traefik.containo.us tlsstores.traefik.containo.us traefikservices.traefik.containo.us middlewaretcps.traefik.containo.us
+----
+
+
+
+
+== 如需詳細資訊、請參閱
+
+* link:../release-notes/resolved-issues.html["已解決的問題"]
+* link:../release-notes/known-issues-ads.html["Astra Data Store prReview和此Astra Control Center版本的已知問題"]
+* link:../release-notes/known-limitations.html["已知限制"]
+

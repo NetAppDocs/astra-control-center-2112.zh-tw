@@ -1,0 +1,59 @@
+---
+sidebar: sidebar 
+permalink: release-notes/resolved-issues.html 
+keywords: astra, control center, fixed bugs, fixes, resolved issues 
+summary: 已知問題可識別可能導致您無法成功使用本產品版本的問題。 
+---
+= 已解決的問題
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/release-notes/
+
+
+本產品版本已修正這些問題。
+
+
+
+== 額外備份會保留為排程備份的一部分
+
+有時Astra Control Center中的一或多個備份會保留超過備份排程中指定的保留數量。這些額外的備份應作為排程備份的一部分刪除、但不會刪除、而且會陷入「擱置中」狀態。
+
+
+
+== 在Astra Control Center中使用具有十進位單位的PVCS來備份或複製應用程式時失敗
+
+使用Astra Control Center備份或複製程序建立的小數位磁碟區失敗。
+
+
+
+== Astra Control Center UI會緩慢顯示應用程式資源的變更、例如持續變更磁碟區
+
+資料保護作業（複製、備份、還原）及後續持續調整磁碟區大小之後、UI中會顯示新的磁碟區大小、延遲最多20分鐘。新增或修改任何應用程式資源時、也會發生UI延遲。在這種情況下、資料保護作業只需幾分鐘就能成功完成、您可以使用儲存後端的管理軟體來確認磁碟區大小的變更。
+
+
+
+== 安裝期間Astra Control Center自訂資源定義所建立的叢集角色繫結不正確
+
+此版本不再需要修補程式來修正安裝期間的叢集角色繫結。
+
+
+
+== ASUP收藏卡在產生或上傳狀態
+
+如果停用或重新啟動ASUP Pod、則ASUP集合可能會陷入產生或上傳狀態。
+
+
+
+== 由營運者部署的應用程式和命名空間
+
+營運者及其部署的應用程式必須使用相同的命名空間。Astra Control每個命名空間僅支援一個由操作員部署的應用程式。
+
+
+
+== 如需詳細資訊、請參閱
+
+* link:../release-notes/known-issues.html["已知問題"]
+* link:../release-notes/known-limitations.html["已知限制"]
+* link:../release-notes/known-issues-ads.html["Astra Data Store預覽與此Astra Control Center版本的已知問題"]
+

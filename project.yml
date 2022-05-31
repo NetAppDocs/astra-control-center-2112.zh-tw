@@ -9,7 +9,7 @@ settings:
   langs: zh-tw,us-en,ja-jp,zh-cn,ko-kr
 sidebar:
   entries:
-  - title: Astra Control Center文件
+  - title: Astra Control Center 212.12文件
     url: "/index.html"
   - section: release-notes
   - section: concepts
@@ -100,4 +100,6 @@ homepage:
       url: https://cloud.netapp.com/kubernetes-hub
     - title: 取得協助的地方
       url: "/support/get-help.html"
-product-family: {}
+product-family:
+  name: Astra
+  repo: astra-family

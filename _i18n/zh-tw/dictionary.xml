@@ -1763,7 +1763,6 @@
   <block id="17d6fb8ac6af8dbaeeb6a6b132b87546" category="paragraph">您可以取得先前版本的文件。</block>
   <block id="2078e9477d0ff8458806513c3f7ae341" category="inline-link">Astra Control Center 21.08文件</block>
   <block id="2ab8aa7ea2a2ec0ac2efdd130e014884" category="list-text"><block ref="2ab8aa7ea2a2ec0ac2efdd130e014884" category="inline-link-rx"></block></block>
-  <block id="0a560904c58e3cede88c521d796e1617" category="sidebar">Astra Control Center文件</block>
   <block id="93168a8084b3e838d2932c4734bd234e" category="sidebar">舊版</block>
   <block id="0798c457df65a765c2a3aace627c312b" category="sidebar">Astra Control Center入門</block>
   <block id="41babe56ec27c9b39ecab6c854265300" category="sidebar">深入瞭解Astra Control Center</block>
@@ -1815,4 +1814,5 @@
   <block id="0460583622f03a52d7693094d6fa2452" category="sidebar">概念</block>
   <block id="8d85c59d57ad2cafad4f894413219af0" category="sidebar">儲存類別和PV大小</block>
   <block id="ae5601e1a5453d0b5924098584b9c3f2" category="sidebar">此Astra Control Center版本的新功能</block>
+  <block id="aa42d5edad3eb6d4a82eb3923c8ffb14" category="sidebar">Astra Control Center 212.12文件</block>
 </blocks>

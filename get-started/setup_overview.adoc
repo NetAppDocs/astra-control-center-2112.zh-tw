@@ -14,10 +14,10 @@ summary: 安裝Astra Control Center、登入UI並變更密碼之後、您將需�
 Astra Control Center支援ONTAP 並監控將支援及Astra Data Store做為儲存後端。安裝Astra Control Center、登入UI並變更密碼之後、您將需要設定授權、新增叢集、管理儲存設備及新增儲存區。
 
 .工作
-* <<Add a license for Astra Control Center>>
-* <<Add cluster>>
-* <<Add a storage backend>>
-* <<Add a bucket>>
+*  a license for Astra Control Center
+*  cluster
+*  a storage backend
+*  a bucket
 
 
 
@@ -214,7 +214,7 @@ TIP: 庫位名稱和說明會顯示為備份位置、您可以在建立備份時
 
 NOTE: 此選項不會出現在您所建立的第一個儲存區。
 
-.. 請繼續新增 <<Add S3 access credentials,認證資訊>>。
+.. 請繼續新增  S3 access credentials,認證資訊。
 
 
 

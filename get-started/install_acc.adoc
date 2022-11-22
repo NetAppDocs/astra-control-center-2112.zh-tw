@@ -55,15 +55,15 @@ IMPORTANT: 請勿在整個安裝程序期間執行下列命令、以免刪除所
 
 若要安裝Astra Control Center、請執行下列步驟：
 
-* <<Download the Astra Control Center bundle>>
-* <<Unpack the bundle and change directory>>
-* <<Add the images to your local registry>>
-* <<Set up namespace and secret for registries with auth requirements>>
-* <<Install the Astra Control Center operator>>
-* <<Configure Astra Control Center>>
-* <<Complete Astra Control Center and operator installation>>
-* <<Verify system status>>
-* <<Log in to the Astra Control Center UI>>
+*  the Astra Control Center bundle
+*  the bundle and change directory
+*  the images to your local registry
+*  up namespace and secret for registries with auth requirements
+*  the Astra Control Center operator
+*  Astra Control Center
+*  Astra Control Center and operator installation
+*  system status
+*  in to the Astra Control Center UI
 
 
 執行以完成部署 link:setup_overview.html["設定工作"]。
@@ -250,8 +250,8 @@ vim astra_control_center_operator_deploy.yaml
 imagePullSecrets:
 - name: <name_of_secret_with_creds_to_local_registry>
 ----
-.. 將「kube-RBAC代理」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
-.. 將「acc oper-manager-manager」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
+.. 將「kube-RBAC代理」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 ,上一步。
+.. 將「acc oper-manager-manager」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 ,上一步。
 .. （若為使用Astra Data Store預覽的安裝）請參閱此已知問題 link:../release-notes/known-issues-ads.html#astra-data-store-cannot-be-used-as-a-storage-class-for-astra-control-center-due-to-mongodb-pod-liveness-probe-failure["儲存類別資源配置工具、以及您需要對Y反 洗錢進行的其他變更"]。
 +
 [listing, subs="+quotes"]
@@ -351,8 +351,8 @@ IMPORTANT: 如果您使用不需要授權的登錄、則必須刪除「imageRegi
 +
 .. 將「[your _register_path]（您的登錄路徑）」變更為您在上一個步驟中推送影像的登錄路徑。
 .. 將「帳戶名稱」字串變更為您要與帳戶建立關聯的名稱。
-.. 將「astraAddress」字串變更為您要在瀏覽器中用來存取Astra的FQDN。請勿在地址中使用「http：//」或「https：//」。複製此FQDN以供在中使用 <<Log in to the Astra Control Center UI,後續步驟>>。
-.. 將「電子郵件」字串變更為預設的初始系統管理員地址。複製此電子郵件地址以供在中使用 <<Log in to the Astra Control Center UI,後續步驟>>。
+.. 將「astraAddress」字串變更為您要在瀏覽器中用來存取Astra的FQDN。請勿在地址中使用「http：//」或「https：//」。複製此FQDN以供在中使用  in to the Astra Control Center UI,後續步驟。
+.. 將「電子郵件」字串變更為預設的初始系統管理員地址。複製此電子郵件地址以供在中使用  in to the Astra Control Center UI,後續步驟。
 .. 如果網站沒有網際網路連線、請將AutoSupport 「已註冊」改為「假」、否則連線網站則保留「真」。
 .. （選用）新增與帳戶相關之使用者的名字「firstName」和姓氏「lastName」。您可以在UI中立即或稍後執行此步驟。
 .. （可選）如果安裝需要、請將「儲存類別」值變更為另一個Astra Trident StorageClass資源。
@@ -758,13 +758,13 @@ metadata:
 安裝Astra Control Center之後、您將變更預設管理員的密碼、並登入Astra Control Center UI儀表板。
 
 .步驟
-. 在瀏覽器中、輸入您在「Astra Address」（astrAddress）中使用的FQDN、位於「Astra控制中心_min.yaml」（當）字段中 <<Install Astra Control Center,您安裝了Astra Control Center>>。
+. 在瀏覽器中、輸入您在「Astra Address」（astrAddress）中使用的FQDN、位於「Astra控制中心_min.yaml」（當）字段中  Astra Control Center,您安裝了Astra Control Center。
 . 出現提示時、請接受自我簽署的憑證。
 +
 
 NOTE: 您可以在登入後建立自訂憑證。
 
-. 在Astra Control Center登入頁面中、輸入您在「Astra Control Center_min.yaml」CR中使用的「電子郵件」值 <<Install Astra Control Center,您安裝了Astra Control Center>>，然後是一次性密碼（「ACC-[UUUID]」）。
+. 在Astra Control Center登入頁面中、輸入您在「Astra Control Center_min.yaml」CR中使用的「電子郵件」值  Astra Control Center,您安裝了Astra Control Center，然後是一次性密碼（「ACC-[UUUID]」）。
 +
 
 NOTE: 如果您輸入錯誤密碼三次、系統將鎖定管理員帳戶15分鐘。

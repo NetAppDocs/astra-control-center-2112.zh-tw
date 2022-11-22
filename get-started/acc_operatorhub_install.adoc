@@ -34,12 +34,12 @@ oc get apiservices
 
 
 .步驟
-* <<Download the Astra Control Center bundle>>
-* <<Unpack the bundle and change directory>>
-* <<Add the images to your local registry>>
-* <<Find the operator install page>>
-* <<Install the operator>>
-* <<Install Astra Control Center>>
+*  the Astra Control Center bundle
+*  the bundle and change directory
+*  the images to your local registry
+*  the operator install page
+*  the operator
+*  Astra Control Center
 
 
 

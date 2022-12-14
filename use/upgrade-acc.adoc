@@ -13,7 +13,7 @@ summary: 若要升級Astra Control Center、您必須依照所述步驟下載套
 
 若要升級Astra Control Center、請從NetApp支援網站下載安裝套件、並完成以下指示、以升級您環境中的Astra Control Center元件。您可以使用此程序、在連線網際網路或無線環境中升級Astra Control Center。
 
-.您需要的是 #8217 ；需要的是什麼
+.您需要的產品
 * link:../get-started/requirements.html["開始升級之前、請確保環境仍符合Astra Control Center部署的最低需求"]。
 * 確保所有叢集操作員都處於健全狀態且可用。
 +
@@ -36,15 +36,16 @@ oc get apiservices
 * 登出您的Astra Control Center。
 
 
+.關於這項工作
 Astra Control Center升級程序會引導您完成下列高層級步驟：
 
-*  the Astra Control Center bundle
-*  the bundle and change directory
-*  the images to your local registry
-*  the updated Astra Control Center operator
-*  Astra Control Center
-*  third-party services
-*  system status
+* <<下載Astra Control Center套裝組合>>
+* <<解壓縮套件並變更目錄>>
+* <<將映像新增至本機登錄>>
+* <<安裝更新的Astra Control Center操作員>>
+* <<升級Astra Control Center>>
+* <<升級協力廠商服務>>
+* <<驗證系統狀態>>
 
 
 
@@ -142,8 +143,8 @@ vim astra_control_center_operator_deploy.yaml
 imagePullSecrets:
 - name: <name_of_secret_with_creds_to_local_registry>
 ----
-.. 將「kube-RBAC代理」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 ,上一步。
-.. 將「acc oper-manager-manager」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 ,上一步。
+.. 將「kube-RBAC代理」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
+.. 將「acc oper-manager-manager」映像的「[your _register_path]」變更為您將映像推入的登錄路徑 <<substep_image_local_registry_push,上一步>>。
 
 
 +
@@ -229,7 +230,7 @@ kubectl edit acc -n [netapp-acc or custom namespace]
 ----
 +
 
-NOTE: 變更Astra版本是Astra Control Center升級的唯一需求。您的登錄路徑必須符合您在中推送映像的登錄路徑 ,上一步。
+NOTE: 變更Astra版本是Astra Control Center升級的唯一需求。您的登錄路徑必須符合您在中推送映像的登錄路徑 <<substep_image_local_registry_push,上一步>>。
 
 . 確認Pod已終止並再次可用：
 +
@@ -356,9 +357,9 @@ conditions:
 
 在先前的升級步驟中、不會升級協力廠商服務Traefik和Cert Manager。您可以選擇使用本文所述的程序來升級、或是在系統需要時保留現有的服務版本。以下是建議的Traefik與Certs Manager升級順序：
 
-.  up acc-helm-repo to upgrade Traefik and Cert-manager
-.  Traefik service using acc-helm-repo
-.  the Cert-manager service
+. <<設定acc helm-repo以升級Traefik和Cert管理程式>>
+. <<使用acc helm-repo更新Traefik服務>>
+. <<更新Cert管理程式服務>>
 
 
 
@@ -459,7 +460,7 @@ python3.7 ./set_previous_values.py
 == 使用acc helm-repo更新Traefik服務
 
 
-NOTE: 您必須已經擁有  up acc-helm-repo to upgrade Traefik and Cert-manager,設定acc helm-repo 完成下列程序之前。
+NOTE: 您必須已經擁有 <<設定acc helm-repo以升級Traefik和Cert管理程式,設定acc helm-repo>> 完成下列程序之前。
 
 . 使用安全的檔案傳輸工具下載Traefik套件、例如：
 +
@@ -539,7 +540,7 @@ TEST SUITE: None
 == 更新Cert管理程式服務
 
 
-NOTE: 您必須已完成  Traefik service using acc-helm-repo,Traefik更新 和  up acc-helm-repo to upgrade Traefik and Cert-manager,在Helm中新增了acc hel-repo 完成下列程序之前。
+NOTE: 您必須已完成 <<使用acc helm-repo更新Traefik服務,Traefik更新>> 和 <<設定acc helm-repo以升級Traefik和Cert管理程式,在Helm中新增了acc hel-repo>> 完成下列程序之前。
 
 . 尋找可與升級的Cert Manager搭配使用的Helm圖表版本：
 +

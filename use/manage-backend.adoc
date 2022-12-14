@@ -18,8 +18,8 @@ summary: 為內部部署的Kubernetes應用程式新增儲存設備。Astra Cont
 您可以完成下列與管理儲存後端相關的工作：
 
 * link:../get-started/setup_overview.html#add-a-storage-backend["新增儲存後端"]
-*  storage backend details
-*  a storage backend
+* <<檢視儲存後端詳細資料>>
+* <<取消管理儲存後端>>
 
 
 

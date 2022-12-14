@@ -64,7 +64,7 @@ metadata:
 
 
 
-== Astra Control Center顯示Astra Data Store預覽儲存後端處於未知狀態
+== Astra Control Center會在中顯示Astra Data Store預覽儲存後端 `Unknown` 州/省
 
 Astra Control Center會在UI的後端頁面上、以「未知」狀態顯示Astra Data Store預覽儲存後端。在這種情況下、儲存後端可實際使用、並可與通訊。儲存後端內的元件可能處於不正常狀態、需要恢復正常狀態、儲存後端才會顯示為「可用」。
 

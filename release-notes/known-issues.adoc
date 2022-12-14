@@ -16,25 +16,25 @@ summary: 已知問題可識別可能導致您無法成功使用本產品版本�
 
 下列已知問題會影響目前的版本：
 
-*  with user-defined label goes into "removed" state
-*  to stop running app backup
-*  app restore from backup Trident creates a larger PV than the original PV
-*  performance impacted by large persistent volumes
-*  clones fail using a specific version of PostgreSQL
-*  clones fail when using Service Account level OCP Security Context Constraints (SCC)
-*  buckets between instances of Astra Control Center causes failures
-*  a bucket provider type with credentials for another type causes data protection failures
-*  and snapshots might not be retained during removal of an Astra Control Center instance
+* <<具有使用者定義標籤的應用程式會進入「移除」狀態>>
+* <<無法停止執行應用程式備份>>
+* <<從備份Trident還原應用程式時、會建立比原始PV更大的PV>>
+* <<大型持續磁碟區會影響複製效能>>
+* <<使用特定版本的PostgreSQL時、應用程式複製失敗>>
+* <<使用服務帳戶層級OCP安全內容限制（SCC）時、應用程式複製失敗>>
+* <<重複使用Astra Control Center執行個體之間的儲存區會導致故障>>
+* <<選取具有其他類型認證的庫位供應商類型會導致資料保護失敗>>
+* <<在移除Astra Control Center執行個體期間、可能無法保留備份與快照>>
 * link:known-issues.html#clone-operation-cant-use-other-buckets-besides-the-default["除了預設值、Clone作業無法使用其他儲存區"]
-*  a cluster with Astra Control Center fails when default kubeconfig file contains more than one context
-*  internal service error when attempting Trident app data management
-*  app execution hook scripts time out and cause post-snapshot scripts not to execute
+* <<使用Astra Control Center管理叢集失敗、因為預設的Kbeconfig檔案包含多個內容>>
+* <<嘗試Trident應用程式資料管理時發生500個內部服務錯誤>>
+* <<自訂應用程式執行攔截指令碼逾時、導致快照後指令碼無法執行>>
 * link:known-issues.html#cant-determine-asup-tar-bundle-status-in-scaled-environment["無法判斷擴充環境中的ASUP tar套件狀態"]
-*  eventually begin to fail when using external-snapshotter version 4.2.0
-*  app restore operations in the same namespace can fail
-*  fails if source version uses a container image registry that does not require authentication and target version uses a container image registry that requires authentication
-*  of Astra Control Center fails to clean up the monitoring-operator pod on the managed cluster
-*  of Astra Control Center fails to clean up Traefik CRDs
+* <<使用外部Snapshotter 4.2.0版時、快照最終會開始失敗>>
+* <<同一個命名空間中的應用程式同時還原作業可能會失敗>>
+* <<如果來源版本使用不需要驗證的容器映像登錄、而目標版本使用需要驗證的容器映像登錄、則升級會失敗>>
+* <<解除安裝Astra Control Center無法清除受管理叢集上的監控操作員Pod>>
+* <<解除安裝Astra Control Center無法清除Traefik CRD>>
 
 
 

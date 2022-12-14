@@ -35,6 +35,7 @@ NOTE: Astra Control Center中的S3鏟斗未報告可用容量。在備份或複�
 「occ new－project worm新聞」（occ new－project wormPress）「ocadm policy add－scc to－group anyuid system:serviceaccounts：wormPress」（ocadm policy add－scc對使用者權限-z預設值-n wormPress）
 
 ====
+.您需要的產品
 若要將應用程式複製到不同的叢集、您需要預設的儲存區。當您新增第一個儲存區時、它會成為預設儲存區。
 
 .步驟
@@ -59,6 +60,7 @@ NOTE: Astra Control Center中的S3鏟斗未報告可用容量。在備份或複�
 . * Clone Summary（複製摘要）*：檢閱有關複製的詳細資料、然後選取* Clone（複製）*。
 
 
+.結果
 Astra Control Center會根據您提供的資訊來複製該應用程式。當新的應用程式實體複本在「*應用程式*」頁面上處於「可用」狀態時、即表示該實體複本作業成功。
 
 

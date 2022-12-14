@@ -76,7 +76,7 @@ Astra Control支援以命名空間範圍運算子安裝的應用程式。這些�
 
 
 
-== 雖然叢集和網路正常運作、但叢集仍處於移除狀態
+== 叢集已進入 `removed` 雖然叢集和網路的運作方式與預期相同、但狀態仍可正常運作
 
 如果叢集處於「移除」狀態、但叢集和網路連線狀況良好（外部使用Kubernetes API存取叢集的嘗試成功）、則您提供給Astra Control的Kubeconfig可能不再有效。這可能是因為叢集上的憑證輪替或過期。若要修正此問題、請使用更新Astra Control中與叢集相關的認證資料 link:https://docs.netapp.com/us-en/astra-automation/index.html["Astra Control API"]：
 

@@ -193,13 +193,13 @@ Astra Control Center使用類型為「負載平衡器」（Astra Control Center�
 | 度量使用者 | Astra Control Center工作節點 | 9090 | HTTPS | 度量資料通訊：確保每個託管叢集都能存取裝載Astra Control Center的叢集上的此連接埠（需要雙向通訊） 
 
 
-| Astra控制中心 | 託管Cloud Insights 版的服務 (https://cloudinsights.netapp.com)[] | 443.. | HTTPS | 通訊Cloud Insights 
+| Astra控制中心 | 託管Cloud Insights 版的服務  | 443.. | HTTPS | 通訊Cloud Insights 
 
 
-| Astra控制中心 | Amazon S3儲存貯體供應商 (https://my-bucket.s3.us-west-2.amazonaws.com/)[] | 443.. | HTTPS | Amazon S3儲存通訊 
+| Astra控制中心 | Amazon S3儲存貯體供應商  | 443.. | HTTPS | Amazon S3儲存通訊 
 
 
-| Astra控制中心 | NetApp ActiveIQ (https://activeiq.solidfire.com)[] | 443.. | HTTPS | NetApp ActiveIQ通訊 
+| Astra控制中心 | NetApp ActiveIQ  | 443.. | HTTPS | NetApp ActiveIQ通訊 
 |===
 
 

@@ -1,0 +1,8 @@
+---
+permalink: get-started/install_acc-cvo.html 
+redirect: astra-control-center-2112/get-started/install_overview.html 
+---
+= 
+:allow-uri-read: 
+
+

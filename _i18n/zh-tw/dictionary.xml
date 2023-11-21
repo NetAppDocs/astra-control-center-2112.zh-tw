@@ -1341,10 +1341,7 @@
   <block id="17f47137e3c74939946bb140e4cbdf1d" category="inline-link">Bitnami Helm圖表</block>
   <block id="1b5fa0188e8ea3c73983cbacc6bad658" category="paragraph">瞭解如何從部署MySQL<block ref="89d30ca06936e36075136ad48e711aa1" category="inline-link-rx"></block>。在Kubernetes叢集上部署MySQL之後、您可以使用Astra Control來管理應用程式。</block>
   <block id="c1f777b14f22e813997f5b2a0fdcf2b1" category="paragraph">MySQL是通過Astra Control驗證的應用程式。</block>
-  <block id="be46076931cd53387cf526748531fc6f" category="inline-link">瞭解Astra Control Service中已驗證的應用程式與標準應用程式之間的差異</block>
-  <block id="ea62af9d3d4954730fa2c07009e49c66" category="list-text"><block ref="d674c8ed82f2facf048e5aa68e13df70" category="inline-link-rx"></block>。</block>
   <block id="823eb2faefa80af2ef88a171cfc0a501" category="inline-link">瞭解Astra Control Center中已驗證的應用程式與標準應用程式之間的差異</block>
-  <block id="75e27f7256629bea1f115d1a2e35ff6a" category="list-text"><block ref="9d3644841f7a0a31e08f219b3140c67c" category="inline-link-rx"></block>。</block>
   <block id="a5d80e4d072d6d19415d551335ac7924" category="paragraph">這些指示適用於Astra Control Service和Astra Control Center。</block>
   <block id="b378f4eaa86416f659084c99619ab92c" category="admonition">從Google Marketplace部署的應用程式尚未通過驗證。有些使用者回報在部署PostgreSQL、MariaDB和MySQL的Google Marketplace時發生探索和/或備份問題。</block>
   <block id="5a2ebfb8baa378cfcfcba58bbb1380c2" category="section-title">需求</block>
@@ -1830,4 +1827,5 @@
   <block id="dd38f906b37d412de7d1c1dcf4cbf31c" category="paragraph"><block ref="dd38f906b37d412de7d1c1dcf4cbf31c" category="inline-link-macro-rx"></block></block>
   <block id="8acb58cbd50ef1b468a020ee0bd351d3" category="inline-link-macro"><block ref="8acb58cbd50ef1b468a020ee0bd351d3" category="inline-link-rx"></block></block>
   <block id="2352c4e1f4d0024ade0869e00e6243f4" category="paragraph"><block ref="2352c4e1f4d0024ade0869e00e6243f4" category="inline-link-macro-rx"></block></block>
+  <block id="931607e4df934f12f0a0d0323f739e8c" category="list-text"><block ref="46bdba95fad7359beee853f2ee144260" category="inline-link-macro-rx"></block>。</block>
 </blocks>

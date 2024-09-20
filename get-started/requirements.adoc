@@ -199,7 +199,7 @@ Astra Control Center使用類型為「負載平衡器」（Astra Control Center�
 | Astra控制中心 | Amazon S3儲存貯體供應商  | 443.. | HTTPS | Amazon S3儲存通訊 
 
 
-| Astra控制中心 | NetApp ActiveIQ  | 443.. | HTTPS | NetApp ActiveIQ通訊 
+| Astra控制中心 | Digital Advisor (https://activeiq.solidfire.com[]） | 443.. | HTTPS | 數位顧問通訊 
 |===
 
 
